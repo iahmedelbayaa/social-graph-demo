@@ -67,4 +67,25 @@ export class UserService {
       await session.close();
     }
   }
+
+  async getFollowing(name: string): Promise<UserProperties[]> {
+    if (!name || name.trim() === '') {
+      throw new BadRequestException('User name cannot be empty');
+    }
+
+    const session = this.driver.session();
+    try {
+      const result = await session.run(
+        `MATCH (u:User {name: $name})-[:FOLLOWS]->(f:User)
+         RETURN f`,
+        { name: name.trim() },
+      );
+      return result.records.map((r) => {
+        const node = r.get('f') as Node;
+        return node.properties as UserProperties;
+      });
+    } finally {
+      await session.close();
+    }
+  }
 }

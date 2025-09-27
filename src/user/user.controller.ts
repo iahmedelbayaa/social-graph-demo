@@ -35,4 +35,12 @@ export class UserController {
     }
     return this.userService.getFollowers(name.trim());
   }
+
+  @Get('following')
+  getFollowing(@Query('name') name: string): Promise<UserProperties[]> {
+    if (!name || name.trim() === '') {
+      throw new BadRequestException('Name parameter is required');
+    }
+    return this.userService.getFollowing(name.trim());
+  }
 }
